@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
       - name: app
-        image: k8s-tutorial-app:latest
-        imagePullPolicy: Never
+        image: ghcr.io/yunfire/k8s-tutorial:latest  # 使用遠程映像
+        imagePullPolicy: Always  # 總是拉取最新映像
         ports:
         - containerPort: 3000
         env:

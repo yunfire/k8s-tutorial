@@ -1,0 +1,53 @@
+name: CD - Deploy to Kubernetes
+
+on:
+  workflow_run:
+    workflows: ["CI - Build and Push Docker Image"]
+    types:
+      - completed
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'latest'
+        
+    - name: Configure kubectl for minikube
+      run: |
+        echo "${{ secrets.KUBECONFIG }}" | base64 -d > kubeconfig
+        export KUBECONFIG=kubeconfig
+        
+    - name: Deploy to Kubernetes
+      run: |
+        # 更新 deployment.yaml 中的映像標籤
+        sed -i "s|image: k8s-tutorial-app:latest|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest|g" k8s/deployment.yaml
+        
+        # 部署到 Kubernetes
+        kubectl apply -f k8s/namespace.yaml
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        
+        # 等待部署完成
+        kubectl rollout status deployment/k8s-tutorial-app -n k8s-tutorial
+        
+    - name: Verify deployment
+      run: |
+        kubectl get pods -n k8s-tutorial
+        kubectl get services -n k8s-tutorial
+        
+    - name: Get service URL
+      run: |
+        echo "Service URL: $(kubectl get service k8s-tutorial-service -n k8s-tutorial -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" 
