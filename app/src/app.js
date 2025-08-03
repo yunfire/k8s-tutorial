@@ -9,13 +9,15 @@ app.use(cors());
 app.use(express.json());
 
 // 路由
+// 修改版本號來測試 CI/CD
 app.get('/', (req, res) => {
   res.json({
     message: '🎉 歡迎來到 K8s 學習項目！',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     pod: process.env.HOSTNAME || 'unknown',
-    version: '1.0.1'
+    version: '1.0.2',  // 更新版本號
+    build: 'CI/CD Test' // 添加構建標識
   });
 });
 
