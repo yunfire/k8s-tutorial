@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-tutorial-app
+  namespace: k8s-tutorial
+  labels:
+    app: k8s-tutorial-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-tutorial-app
+  template:
+    metadata:
+      labels:
+        app: k8s-tutorial-app
+    spec:
+      containers:
+      - name: app
+        image: k8s-tutorial-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5 

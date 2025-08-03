@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-tutorial-service
+  namespace: k8s-tutorial
+  labels:
+    app: k8s-tutorial-app
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    app: k8s-tutorial-app 
