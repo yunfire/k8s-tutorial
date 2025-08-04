@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     pod: process.env.HOSTNAME || 'unknown',
-    version: '1.0.2',  // 更新版本號
+    version: '1.0.3',  // 更新版本號
     build: 'CI/CD Test' // 添加構建標識
   });
 });
@@ -32,7 +32,7 @@ app.get('/health', (req, res) => {
 
 app.get('/api/info', (req, res) => {
   res.json({
-    version: '1.0.0',
+    version: '1.0.2',
     features: ['Kubernetes', 'Docker', 'CI/CD', 'Node.js'],
     learning: 'K8s 基礎概念和部署流程',
     endpoints: [
